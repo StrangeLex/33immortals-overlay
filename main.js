@@ -35,7 +35,8 @@ let win = null, tray = null, settingsWin = null, keysWin = null, hudWin = null;
 let betaWanted = false;     // mode bêta activé (pour le HUD plein écran)
 let opacity = 1.0;          // 0.3 → 1.0
 let clickThrough = false;   // les clics passent au jeu
-let updateAvailable = "";   // version dispo (mise à jour MANUELLE via le site, pas d'auto-install)
+let updateReady = false;    // une mise à jour est téléchargée, prête à installer
+let updateVersion = "";
 const DOWNLOAD_URL = "https://33immortals.fr/download";
 let resizing = false;       // redimensionnement custom en cours (fenêtre transparente)
 let gameRunning = false;    // le jeu (33Immortals.exe) est-il lancé ?
@@ -305,8 +306,8 @@ function refreshTray() {
     { label: (clickThrough ? "✓ " : "") + "Clic-traversant  (Ctrl+Alt+C)", click: toggleClickThrough },
     { type: "separator" },
   ];
-  if (updateAvailable) {
-    items.push({ label: "⬇️ Télécharger la mise à jour " + updateAvailable, click: () => shell.openExternal(DOWNLOAD_URL) });
+  if (updateReady) {
+    items.push({ label: "🔄 Redémarrer pour installer la mise à jour " + updateVersion, click: () => { try { autoUpdater.quitAndInstall(); } catch (e) { app.quit(); } } });
   } else {
     items.push({ label: "Vérifier les mises à jour", click: () => autoUpdater.checkForUpdates().catch(() => {}) });
   }
@@ -320,7 +321,7 @@ function createTray() {
     tray.setToolTip("33 Immortals Overlay");
     refreshTray();
     tray.on("click", toggleShow);
-    tray.on("balloon-click", () => { if (updateAvailable) shell.openExternal(DOWNLOAD_URL); });
+    tray.on("balloon-click", () => { if (updateReady) { try { autoUpdater.quitAndInstall(); } catch (e) {} } });
   } catch (e) {}
 }
 
@@ -328,29 +329,30 @@ function createTray() {
    À chaque lancement : vérifie, télécharge en arrière-plan, installe à la
    fermeture de l'app. Donc : on relance → MAJ installée. */
 function setupUpdates() {
-  // IMPORTANT : l'app NE se modifie JAMAIS toute seule (pas d'auto-download ni d'auto-install).
-  // Elle vérifie seulement et prévient ; la mise à jour se fait manuellement via le site.
-  // (Évite les réinstallations silencieuses qui échouaient sur un exe non signé.)
-  autoUpdater.autoDownload = false;
-  autoUpdater.autoInstallOnAppQuit = false;
+  // Auto-update ACTIF : télécharge en arrière-plan, installe à la fermeture
+  // → l'app est à jour au relancement suivant. (Provider github, flux latest.yml.)
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.logger = { info: ulog, warn: ulog, error: ulog, debug: () => {} };
 
-  autoUpdater.on("update-available", (i) => {
-    updateAvailable = (i && i.version) ? "v" + i.version : "";
-    ulog("update-available " + updateAvailable);
+  autoUpdater.on("update-available", (i) => ulog("update-available " + (i && i.version)));
+  autoUpdater.on("update-not-available", () => ulog("up-to-date"));
+  autoUpdater.on("error", (e) => ulog("update error " + (e && e.message)));
+  autoUpdater.on("download-progress", (p) => ulog("downloading " + Math.round(p.percent) + "%"));
+  autoUpdater.on("update-downloaded", (i) => {
+    updateReady = true; updateVersion = (i && i.version) ? "v" + i.version : "";
+    ulog("update-downloaded " + updateVersion + " — installée à la fermeture");
     refreshTray();
     try {
       if (tray && tray.displayBalloon) {
-        tray.displayBalloon({ title: "33 Immortals Overlay", content: "Nouvelle version " + updateAvailable + " disponible — clique pour la télécharger." });
+        tray.displayBalloon({ title: "33 Immortals Overlay", content: "Mise à jour " + updateVersion + " prête — installée à la fermeture (ou clique pour redémarrer maintenant)." });
       }
     } catch (e) {}
   });
-  autoUpdater.on("update-not-available", () => ulog("up-to-date"));
-  autoUpdater.on("error", (e) => ulog("update error " + (e && e.message)));
 
   const check = () => autoUpdater.checkForUpdates().catch((e) => ulog("check failed " + (e && e.message)));
   check();                                   // au lancement
-  setInterval(check, 60 * 60 * 1000);        // re-vérifie chaque heure
+  setInterval(check, 30 * 60 * 1000);        // re-vérifie toutes les 30 min
 }
 
 // Instance unique
