@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld("overlay", {
   setBeta: (on) => ipcRenderer.send("overlay:beta", on),
   getLang: () => ipcRenderer.invoke("overlay:get-lang"),
   setLang: (l) => ipcRenderer.send("overlay:set-lang", l),
+  getVersion: () => ipcRenderer.invoke("overlay:version"),
   resizeStart: () => ipcRenderer.send("overlay:resize-start"),
   resizeEnd: () => ipcRenderer.send("overlay:resize-end"),
   getState: () => ipcRenderer.invoke("overlay:get"),

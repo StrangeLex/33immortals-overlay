@@ -245,6 +245,7 @@ ipcMain.handle("keys:reset", () => { ACTIONS.forEach((a) => { keymap[a.id] = a.d
 ipcMain.handle("overlay:game-get", () => ({ running: gameRunning }));
 ipcMain.on("overlay:beta", (_e, on) => { betaWanted = !!on; reconcileHud(); });
 ipcMain.handle("overlay:get-lang", () => appLang);
+ipcMain.handle("overlay:version", () => app.getVersion());
 ipcMain.on("overlay:set-lang", (_e, lang) => {
   lang = (lang === "en") ? "en" : "fr";
   if (lang === appLang) return;
