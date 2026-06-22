@@ -4,7 +4,7 @@
    avec une barre de titre propre (déplacer / opacité / réduire / fermer),
    clic-traversant et mise à jour automatique.
    ============================================================ */
-const { app, BrowserWindow, globalShortcut, Tray, Menu, nativeImage, ipcMain, screen } = require("electron");
+const { app, BrowserWindow, globalShortcut, Tray, Menu, nativeImage, ipcMain, screen, desktopCapturer } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
@@ -174,6 +174,12 @@ ipcMain.handle("keys:set", (_e, id, accel) => {
 });
 ipcMain.handle("keys:reset", () => { ACTIONS.forEach((a) => { keymap[a.id] = a.def; }); saveKeys(); applyShortcuts(); broadcastKeys(); return { actions: ACTIONS, map: keymap }; });
 ipcMain.handle("overlay:game-get", () => ({ running: gameRunning }));
+ipcMain.handle("overlay:screen-source", async () => {
+  try {
+    const sources = await desktopCapturer.getSources({ types: ["screen"] });
+    return sources && sources[0] ? sources[0].id : null;
+  } catch (e) { ulog("screen-source KO " + (e && e.message)); return null; }
+});
 ipcMain.on("overlay:resize-start", () => { resizing = true; resizeTick(); });
 ipcMain.on("overlay:resize-end", () => { resizing = false; });
 ipcMain.handle("overlay:get", () => ({ opacity, clickThrough }));
