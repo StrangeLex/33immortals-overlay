@@ -7,6 +7,8 @@
 **🗺️ La carte interactive de _33 Immortals_, en superposition par-dessus le jeu.**
 **🗺️ The _33 Immortals_ interactive map, as an overlay on top of the game.**
 
+**🌐 Bilingue 🇫🇷 Français / 🇬🇧 English · 🌐 Bilingual French / English**
+
 [![Télécharger / Download](https://img.shields.io/badge/⬇️_T%C3%A9l%C3%A9charger_%7C_Download-Windows-e8a83c?style=for-the-badge)](https://33immortals.fr/download)
 
 [![Release](https://img.shields.io/github/v/release/StrangeLex/33immortals-overlay?style=flat-square&color=e8a83c)](https://github.com/StrangeLex/33immortals-overlay/releases/latest)
@@ -34,6 +36,8 @@ Application **overlay (superposition)** qui affiche la carte communautaire de [3
 - 🌓 Fond **transparent** + **opacité réglable** : tu vois le jeu derrière
 - 🖱️ **Clic-traversant** : tes clics passent au jeu
 - 👥 **Coop** : rejoins la partie d'un ami avec un lien + un pseudo (sans compte)
+- 🌐 **Bilingue français / anglais** : langue détectée automatiquement au lancement (selon ton système), changeable à tout moment dans les réglages — ton choix est mémorisé
+- 🗺️ **Les 3 royaumes** cartographiés (Enfer, Purgatoire, Paradis)
 - ⚙️ Fenêtre **Réglages** + ⌨️ **raccourcis 100 % personnalisables**
 - 🔄 **Mises à jour automatiques**
 
@@ -63,6 +67,8 @@ An **overlay** app that displays the [33immortals.fr](https://33immortals.fr) co
 - 🌓 **Transparent** background + **adjustable opacity**: see the game behind
 - 🖱️ **Click-through**: your clicks pass to the game
 - 👥 **Co-op**: join a friend's party with a link + nickname (no account)
+- 🌐 **Bilingual French / English**: language auto-detected on launch (from your system), switchable any time in the settings — your choice is remembered
+- 🗺️ **All 3 realms** mapped (Hell, Purgatory, Paradise)
 - ⚙️ **Settings** window + ⌨️ **fully customizable shortcuts**
 - 🔄 **Automatic updates**
 
