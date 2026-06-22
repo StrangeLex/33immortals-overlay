@@ -1,48 +1,48 @@
 # Changelog
 
-Toutes les modifications notables de l'application sont consignées ici.
-Le format suit [Keep a Changelog](https://keepachangelog.com/fr/) et le
-[versionnage sémantique](https://semver.org/lang/fr/).
+All notable changes to the application are documented here.
+This project follows [Keep a Changelog](https://keepachangelog.com/) and
+[Semantic Versioning](https://semver.org/).
 
-## [Non publié]
-- Pipeline GitHub Actions : build + signature SignPath + publication automatique des Releases.
-- Distribution et mises à jour via **GitHub Releases**.
-- Carte du site : **niveaux de zoom plus fins** (paliers intermédiaires à la molette, aux boutons et au clavier) — corrige #1.
+## [Unreleased]
+- GitHub Actions pipeline: build + SignPath signing + automatic Release publishing.
+- Distribution and updates via **GitHub Releases**.
+- On-site map: **finer-grained zoom levels** (intermediate steps on wheel, buttons and keyboard) — fixes #1.
 
 ## [1.0.23]
-- Clic sur un marqueur = **marqué « trouvé »** (grisé/estompé), reclic pour annuler — corrige #2.
-- Bouton **« Réactiver les marqueurs trouvés »** dans les options (FR/EN) dès qu'au moins un est trouvé.
-- Nouvelle action de raccourci configurable : **réactiver tous les marqueurs trouvés**.
+- Clicking a marker now **marks it as found** (greyed out / dimmed), click again to undo — fixes #2.
+- **"Restore found markers"** button in the options (EN/FR) as soon as at least one is found.
+- New configurable shortcut action: **restore all found markers**.
 
 ## [1.0.22]
-- Les liens externes s'ouvrent dans le navigateur par défaut.
+- External links now open in the default browser.
 
 ## [1.0.20]
-- Système de langue **français / anglais** (détection auto, choix mémorisé).
-- Position et opacité de la fenêtre mémorisées entre les sessions.
-- Création de partie directement depuis l'app (pseudo enregistré).
+- **English / French** language system (auto-detection, remembered choice).
+- Window position and opacity remembered across sessions.
+- Create a party straight from the app (saved nickname).
 
 ## [1.0.7]
-- Éditeur de **touches** personnalisables (3ᵉ fenêtre) : tous les raccourcis remappables.
-- Un raccourci assignable **par catégorie** de marqueur (non défini par défaut).
-- Retrait de la connexion/inscription dans l'app (rejoindre via lien + pseudo).
-- Scrollbar aux couleurs du thème.
+- Customizable **keys** editor (3rd window): all shortcuts remappable.
+- One assignable shortcut **per marker category** (unbound by default).
+- Removed login/sign-up from the app (join via link + nickname).
+- Theme-colored scrollbar.
 
 ## [1.0.6]
-- Clic-traversant : la barre/encoche reste cliquable au survol.
+- Click-through: the bar/notch stays clickable on hover.
 
 ## [1.0.5]
-- Encoche pour masquer la barre du haut (reste déplaçable).
-- Raccourcis de type de carte (Bleu / Jaune / Rose / Tous).
+- Notch to hide the top bar (stays draggable).
+- Map-type shortcuts (Blue / Yellow / Pink / All).
 
 ## [1.0.4]
-- Fenêtre **transparente** (on voit le jeu derrière la carte).
-- Fenêtre **Réglages** séparée + poignée de redimensionnement.
+- **Transparent** window (you see the game behind the map).
+- Separate **Settings** window + resize handle.
 
 ## [1.0.3]
-- Installeur complet fiable + mises à jour différentielles.
-- Réduction du nombre de processus.
+- Reliable full installer + differential updates.
+- Fewer processes.
 
 ## [1.0.0]
-- Première version : overlay de la carte interactive, opacité, clic-traversant,
-  parties coop, mises à jour automatiques.
+- First release: interactive map overlay, opacity, click-through,
+  co-op parties, automatic updates.

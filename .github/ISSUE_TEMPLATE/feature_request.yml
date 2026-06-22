@@ -1,16 +1,16 @@
-name: 💡 Suggestion / Feature request
-description: Proposer une idée / Suggest an idea
+name: 💡 Feature request / Suggestion
+description: Suggest an idea / Proposer une idée
 labels: ["enhancement"]
 body:
   - type: textarea
     id: idea
     attributes:
-      label: Ton idée / Your idea
-      description: Que voudrais-tu voir ajouté ou amélioré ? / What would you like added or improved?
+      label: Your idea / Ton idée
+      description: What would you like added or improved? / Que voudrais-tu voir ajouté ou amélioré ?
     validations:
       required: true
   - type: textarea
     id: why
     attributes:
-      label: Pourquoi ? / Why?
-      description: En quoi est-ce utile ? / Why would it help?
+      label: Why? / Pourquoi ?
+      description: Why would it help? / En quoi est-ce utile ?

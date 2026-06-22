@@ -1,15 +1,15 @@
-<!-- Merci pour ta contribution ! / Thanks for contributing! -->
+<!-- Thanks for contributing! / Merci pour ta contribution ! -->
 
 ## Description
-<!-- Que change cette PR ? / What does this PR change? -->
+<!-- What does this PR change? / Que change cette PR ? -->
 
 ## Type
-- [ ] 🐛 Correction de bug / Bug fix
-- [ ] ✨ Nouvelle fonctionnalité / New feature
+- [ ] 🐛 Bug fix / Correction de bug
+- [ ] ✨ New feature / Nouvelle fonctionnalité
 - [ ] 📝 Documentation
 - [ ] 🧹 Refactor / maintenance
 
 ## Checklist
-- [ ] `node --check main.js preload.js` passe sans erreur
-- [ ] Testé localement (`npm start`)
-- [ ] La documentation est à jour si nécessaire
+- [ ] `node --check main.js preload.js` passes without errors
+- [ ] Tested locally (`npm start`)
+- [ ] Documentation updated if needed

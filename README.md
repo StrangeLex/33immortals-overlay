@@ -4,12 +4,12 @@
 
 # 33 Immortals Overlay
 
-**🗺️ La carte interactive de _33 Immortals_, en superposition par-dessus le jeu.**
 **🗺️ The _33 Immortals_ interactive map, as an overlay on top of the game.**
+**🗺️ La carte interactive de _33 Immortals_, en superposition par-dessus le jeu.**
 
-**🌐 Bilingue 🇫🇷 Français / 🇬🇧 English · 🌐 Bilingual French / English**
+**🌐 Bilingual 🇬🇧 English / 🇫🇷 French · 🌐 Bilingue anglais / français**
 
-[![Télécharger / Download](https://img.shields.io/badge/⬇️_T%C3%A9l%C3%A9charger_%7C_Download-Windows-e8a83c?style=for-the-badge)](https://33immortals.fr/download)
+[![Download / Télécharger](https://img.shields.io/badge/⬇️_Download_%7C_T%C3%A9l%C3%A9charger-Windows-e8a83c?style=for-the-badge)](https://33immortals.fr/download)
 
 [![Release](https://img.shields.io/github/v/release/StrangeLex/33immortals-overlay?style=flat-square&color=e8a83c)](https://github.com/StrangeLex/33immortals-overlay/releases/latest)
 [![Build](https://img.shields.io/github/actions/workflow/status/StrangeLex/33immortals-overlay/release.yml?style=flat-square)](https://github.com/StrangeLex/33immortals-overlay/actions)
@@ -22,8 +22,39 @@
 
 </div>
 
-> ⚠️ **FR —** Projet de fans **non-officiel**. _33 Immortals®_ — © [Thunder Lotus Games](https://thunderlotusgames.com). Application ni affiliée ni soutenue par Thunder Lotus Games.
 > ⚠️ **EN —** Unofficial **fan-made** project. _33 Immortals®_ — © [Thunder Lotus Games](https://thunderlotusgames.com). This app is not affiliated with nor endorsed by Thunder Lotus Games.
+> ⚠️ **FR —** Projet de fans **non-officiel**. _33 Immortals®_ — © [Thunder Lotus Games](https://thunderlotusgames.com). Application ni affiliée ni soutenue par Thunder Lotus Games.
+
+---
+
+## 🇬🇧 English
+
+An **overlay** app that displays the [33immortals.fr](https://33immortals.fr) community map in a transparent, always-on-top window, with adjustable opacity and a co-op mode.
+
+### ✨ Features
+- 🗺️ Map always on top of the game (windowed / borderless / 2nd monitor)
+- 🌓 **Transparent** background + **adjustable opacity**: see the game behind
+- 🖱️ **Click-through**: your clicks pass to the game
+- 👥 **Co-op**: join a friend's party with a link + nickname (no account)
+- 🌐 **Bilingual English / French**: language auto-detected on launch (from your system), switchable any time in the settings — your choice is remembered
+- 🗺️ **All 3 realms** mapped (Hell, Purgatory, Paradise)
+- ⚙️ **Settings** window + ⌨️ **fully customizable shortcuts**
+- 🔄 **Automatic updates**
+
+### ⬇️ Download
+Windows 64-bit (10 & 11): **<https://33immortals.fr/download>**
+> Not signed with a paid certificate → SmartScreen may show "Windows protected your PC". It's not a virus: **More info → Run anyway**.
+
+### ⌨️ Default shortcuts
+| Shortcut | Action |
+|---|---|
+| `Ctrl + Alt + O` | Show / hide |
+| `Ctrl + Alt + ↑` / `↓` | More / less opaque |
+| `Ctrl + Alt + C` | Click-through |
+| `Ctrl + Alt + Q` | Quit |
+| `Ctrl + Alt + 1 2 3 4` | Map type: Blue / Yellow / Pink / All |
+
+Everything is editable in the **Keys** window (one shortcut per marker category included, unbound by default).
 
 ---
 
@@ -58,42 +89,11 @@ Tout est modifiable dans la fenêtre **Touches** (une touche par catégorie de m
 
 ---
 
-## 🇬🇧 English
-
-An **overlay** app that displays the [33immortals.fr](https://33immortals.fr) community map in a transparent, always-on-top window, with adjustable opacity and a co-op mode.
-
-### ✨ Features
-- 🗺️ Map always on top of the game (windowed / borderless / 2nd monitor)
-- 🌓 **Transparent** background + **adjustable opacity**: see the game behind
-- 🖱️ **Click-through**: your clicks pass to the game
-- 👥 **Co-op**: join a friend's party with a link + nickname (no account)
-- 🌐 **Bilingual French / English**: language auto-detected on launch (from your system), switchable any time in the settings — your choice is remembered
-- 🗺️ **All 3 realms** mapped (Hell, Purgatory, Paradise)
-- ⚙️ **Settings** window + ⌨️ **fully customizable shortcuts**
-- 🔄 **Automatic updates**
-
-### ⬇️ Download
-Windows 64-bit (10 & 11): **<https://33immortals.fr/download>**
-> Not signed with a paid certificate → SmartScreen may show "Windows protected your PC". It's not a virus: **More info → Run anyway**.
-
-### ⌨️ Default shortcuts
-| Shortcut | Action |
-|---|---|
-| `Ctrl + Alt + O` | Show / hide |
-| `Ctrl + Alt + ↑` / `↓` | More / less opaque |
-| `Ctrl + Alt + C` | Click-through |
-| `Ctrl + Alt + Q` | Quit |
-| `Ctrl + Alt + 1 2 3 4` | Map type: Blue / Yellow / Pink / All |
-
-Everything is editable in the **Keys** window (one shortcut per marker category included, unbound by default).
-
----
-
-## 🖼️ Aperçu / Preview
+## 🖼️ Preview / Aperçu
 
 <div align="center">
 
-_La carte en superposition, en jeu / The map overlaid, in-game_
+_The map overlaid, in-game / La carte en superposition, en jeu_
 
 <img src="https://33immortals.fr/screen/screen1.png" width="80%" />
 <br/>
@@ -106,8 +106,8 @@ _La carte en superposition, en jeu / The map overlaid, in-game_
 
 ## 🛠️ Build / Compiler
 
-**Node.js 18+**. Pour compiler le `.exe` Windows depuis Linux : **wine** (`wine` + `wine32:i386`).
-To build the Windows `.exe` from Linux you need **wine** (`wine` + `wine32:i386`).
+**Node.js 18+**. To build the Windows `.exe` from Linux you need **wine** (`wine` + `wine32:i386`).
+Pour compiler le `.exe` Windows depuis Linux : **wine** (`wine` + `wine32:i386`).
 
 ```bash
 npm install
@@ -116,22 +116,21 @@ npm start          # dev
 ```
 
 ### 🏗️ Architecture
-Coquille **[Electron](https://www.electronjs.org/)** minimale qui charge `33immortals.fr/carte?app=1`. Toute l'UI est servie par le site → la plupart des évolutions se font **sans réinstaller**. / Minimal **Electron** shell loading `33immortals.fr/carte?app=1`; the whole UI is served by the website, so most changes ship **without reinstalling**.
+Minimal **[Electron](https://www.electronjs.org/)** shell loading `33immortals.fr/carte?app=1`; the whole UI is served by the website, so most changes ship **without reinstalling**. / Coquille **Electron** minimale qui charge `33immortals.fr/carte?app=1`. Toute l'UI est servie par le site → la plupart des évolutions se font **sans réinstaller**.
 
-- `main.js` — fenêtre transparente always-on-top, opacité, clic-traversant, fenêtres Réglages & Touches, raccourcis globaux, auto-update.
-- `preload.js` — pont `contextBridge` page ↔ app.
-- `package.json` — config `electron-builder` (NSIS + flux de mise à jour).
+- `main.js` — transparent always-on-top window, opacity, click-through, Settings & Keys windows, global shortcuts, auto-update.
+- `preload.js` — `contextBridge` bridge between the page and the app.
+- `package.json` — `electron-builder` config (NSIS + update feed).
 
-## 🔏 Signature / Code signing
-Les installeurs sont publiés via **GitHub Actions** et signés par
-[**SignPath Foundation**](https://signpath.org/open-source) (signature gratuite
-pour l'open-source) → la réputation Windows se construit au fil des
-téléchargements. Détails : [`SIGNING.md`](SIGNING.md).
-Releases are built by **GitHub Actions** and signed via **SignPath Foundation**
-(free OSS code signing). See [`SIGNING.md`](SIGNING.md).
+## 🔏 Code signing / Signature
+Releases are built by **GitHub Actions** and signed via
+[**SignPath Foundation**](https://signpath.org/open-source) (free OSS code
+signing) → Windows reputation builds up as downloads grow. See [`SIGNING.md`](SIGNING.md).
+Les installeurs sont publiés via **GitHub Actions** et signés par **SignPath
+Foundation** (signature gratuite pour l'open-source). Détails : [`SIGNING.md`](SIGNING.md).
 
-## 🤝 Contribuer / Contributing
-Voir / see [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CHANGELOG.md`](CHANGELOG.md) · [`SECURITY.md`](SECURITY.md)
+## 🤝 Contributing / Contribuer
+See / voir [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CHANGELOG.md`](CHANGELOG.md) · [`SECURITY.md`](SECURITY.md)
 
-## 📄 Licence / License
+## 📄 License / Licence
 [BSD 3-Clause](LICENSE).

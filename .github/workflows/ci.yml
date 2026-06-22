@@ -16,10 +16,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Vérification de syntaxe
+      - name: Syntax check
         run: |
           node --check main.js
           node --check preload.js
           node --check gen-update-metadata.js
-      - name: Validation de la config electron-builder
+      - name: Validate electron-builder config
         run: npx electron-builder --help >/dev/null

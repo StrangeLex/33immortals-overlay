@@ -1,19 +1,19 @@
 name: Release
 
-# Déclenché en poussant un tag de version, ex. : git tag v1.0.8 && git push --tags
+# Triggered by pushing a version tag, e.g.: git tag v1.0.8 && git push --tags
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
 
 permissions:
-  contents: write          # nécessaire pour créer la Release
+  contents: write          # required to create the Release
 
 jobs:
   release:
     runs-on: windows-latest
     env:
-      # Signé seulement si le secret SignPath est configuré (sinon release non signée)
+      # Signed only if the SignPath secret is configured (otherwise an unsigned release)
       HAS_SIGNPATH: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
@@ -25,13 +25,13 @@ jobs:
 
       - run: npm ci
 
-      - name: Build (electron-builder, non signé)
+      - name: Build (electron-builder, unsigned)
         run: npx electron-builder --win --x64 --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
-      # --- Signature de code via SignPath (gratuit pour l'open-source) ---
-      - name: Upload de l'installeur pour SignPath
+      # --- Code signing via SignPath (free for open source) ---
+      - name: Upload installer for SignPath
         if: env.HAS_SIGNPATH == 'true'
         id: unsigned
         uses: actions/upload-artifact@v4
@@ -40,10 +40,10 @@ jobs:
           path: dist/33ImmortalsOverlay-Setup-*.exe
           if-no-files-found: error
 
-      - name: Demande de signature SignPath
+      - name: Request SignPath signature
         id: signpath
         if: env.HAS_SIGNPATH == 'true'
-        continue-on-error: true        # si la signature échoue, on publie quand même (non signé)
+        continue-on-error: true        # if signing fails, publish anyway (unsigned)
         uses: signpath/github-action-submit-signing-request@v1
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -52,22 +52,35 @@ jobs:
           signing-policy-slug: 33_immortals_Overlay
           github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
           wait-for-completion: true
-          output-artifact-directory: dist          # remplace l'exe par sa version signée
+          output-artifact-directory: dist          # replaces the exe with its signed version
 
-      - name: Régénère latest.yml depuis l'exe SIGNÉ
+      - name: Regenerate latest.yml from the SIGNED exe
         if: steps.signpath.outcome == 'success'
         run: node gen-update-metadata.js
 
-      - name: État de la signature
-        run: echo "Signature SignPath = ${{ steps.signpath.outcome || 'non configurée' }}"
+      - name: Signing status
+        run: echo "SignPath signing = ${{ steps.signpath.outcome || 'not configured' }}"
         shell: bash
 
-      # --- Publication de la Release GitHub (flux de mise à jour electron-updater) ---
-      - name: Crée / met à jour la Release
+      # --- GitHub Release publishing (electron-updater feed) ---
+      - name: Create / update the Release
         uses: softprops/action-gh-release@v2
         with:
           draft: false
           fail_on_unmatched_files: true
+          name: 33 Immortals Overlay ${{ github.ref_name }}
+          body: |
+            **33 Immortals Overlay** — the interactive map of *33 Immortals*, overlaid on top of the game.
+
+            ### Install
+            Download **33ImmortalsOverlay-Setup-X.Y.Z.exe** below and run it. Existing installs update automatically on the next restart.
+
+            > Not signed with a paid certificate yet → SmartScreen may show "Windows protected your PC". It's not a virus: **More info → Run anyway**.
+
+            ### Links
+            - 🌐 Bilingual app (English / French) — website: <https://33immortals.fr/download>
+            - 📝 Full changelog: [CHANGELOG.md](https://github.com/StrangeLex/33immortals-overlay/blob/main/CHANGELOG.md)
+          generate_release_notes: true
           files: |
             dist/33ImmortalsOverlay-Setup-*.exe
             dist/latest.yml
