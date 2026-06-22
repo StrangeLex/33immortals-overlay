@@ -20,7 +20,7 @@ SmartScreen s'estompe avec le temps).
 ### 2. Configurer le projet dans SignPath
 1. **Connecte le dépôt GitHub** (Integrations → GitHub).
 2. Crée un **Project** avec le slug exact **`33immortals-overlay`**.
-3. Crée une **Signing Policy** avec le slug exact **`release-signing`**.
+3. Crée une **Signing Policy** avec le slug exact **`33_immortals_Overlay`**.
 4. Configure un **Artifact** de type *exe/zip* correspondant à l'installeur.
 5. Crée un **CI user** + un **API token**.
 

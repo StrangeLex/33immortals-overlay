@@ -47,7 +47,7 @@ jobs:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
           project-slug: 33immortals-overlay
-          signing-policy-slug: release-signing
+          signing-policy-slug: 33_immortals_Overlay
           github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
           wait-for-completion: true
           output-artifact-directory: dist          # remplace l'exe par sa version signée
