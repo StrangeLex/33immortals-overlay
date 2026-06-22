@@ -23,6 +23,8 @@ contextBridge.exposeInMainWorld("overlay", {
   resetKeys: () => ipcRenderer.invoke("keys:reset"),
   onKeysChanged: (cb) => ipcRenderer.on("keys:changed", (_e, d) => cb(d)),
   onCat: (cb) => ipcRenderer.on("overlay:cat", (_e, c) => cb(c)),
+  getGame: () => ipcRenderer.invoke("overlay:game-get"),
+  onGame: (cb) => ipcRenderer.on("overlay:game", (_e, s) => cb(s)),
   resizeStart: () => ipcRenderer.send("overlay:resize-start"),
   resizeEnd: () => ipcRenderer.send("overlay:resize-end"),
   getState: () => ipcRenderer.invoke("overlay:get"),

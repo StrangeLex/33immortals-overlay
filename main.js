@@ -7,6 +7,7 @@
 const { app, BrowserWindow, globalShortcut, Tray, Menu, nativeImage, ipcMain, screen } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const { exec } = require("child_process");
 const { autoUpdater } = require("electron-updater");
 
 const SITE = "https://33immortals.fr/carte?app=1";
@@ -23,6 +24,7 @@ let opacity = 1.0;          // 0.3 → 1.0
 let clickThrough = false;   // les clics passent au jeu
 let updateReady = false;    // une mise à jour est téléchargée et prête
 let resizing = false;       // redimensionnement custom en cours (fenêtre transparente)
+let gameRunning = false;    // le jeu (33Immortals.exe) est-il lancé ?
 
 /* Journal de mise à jour (dans %AppData%/33 Immortals Overlay/update.log) — utile pour diagnostiquer */
 function ulog(msg) {
@@ -111,6 +113,17 @@ function broadcastKeys() {
   [win, settingsWin, keysWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("keys:changed", { actions: ACTIONS, map: keymap }); });
 }
 
+/* --- Détection du jeu (process 33Immortals.exe) --- */
+function broadcastGame() {
+  [win, settingsWin, keysWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("overlay:game", { running: gameRunning }); });
+}
+function checkGame() {
+  exec('tasklist /FI "IMAGENAME eq 33Immortals.exe" /NH', { windowsHide: true }, (err, stdout) => {
+    const running = !err && /33immortals\.exe/i.test(stdout || "");
+    if (running !== gameRunning) { gameRunning = running; broadcastGame(); ulog("game " + (running ? "détecté" : "fermé")); }
+  });
+}
+
 /* Redimensionnement custom : une fenêtre transparente ne peut pas être
    redimensionnée par les bords sous Windows → on suit le curseur depuis la
    poignée (coin bas-droit) tant que le bouton est enfoncé. */
@@ -160,6 +173,7 @@ ipcMain.handle("keys:set", (_e, id, accel) => {
   return { actions: ACTIONS, map: keymap };
 });
 ipcMain.handle("keys:reset", () => { ACTIONS.forEach((a) => { keymap[a.id] = a.def; }); saveKeys(); applyShortcuts(); broadcastKeys(); return { actions: ACTIONS, map: keymap }; });
+ipcMain.handle("overlay:game-get", () => ({ running: gameRunning }));
 ipcMain.on("overlay:resize-start", () => { resizing = true; resizeTick(); });
 ipcMain.on("overlay:resize-end", () => { resizing = false; });
 ipcMain.handle("overlay:get", () => ({ opacity, clickThrough }));
@@ -263,6 +277,8 @@ else {
     createTray();
     applyShortcuts();
     setupUpdates();
+    checkGame();
+    setInterval(checkGame, 5000);   // surveille le lancement / fermeture du jeu
   });
   app.on("will-quit", () => globalShortcut.unregisterAll());
   app.on("window-all-closed", () => { /* reste en zone de notification */ });
