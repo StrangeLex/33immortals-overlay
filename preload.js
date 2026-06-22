@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld("overlay", {
   getGame: () => ipcRenderer.invoke("overlay:game-get"),
   onGame: (cb) => ipcRenderer.on("overlay:game", (_e, s) => cb(s)),
   getScreenSource: () => ipcRenderer.invoke("overlay:screen-source"),
+  setBeta: (on) => ipcRenderer.send("overlay:beta", on),
   resizeStart: () => ipcRenderer.send("overlay:resize-start"),
   resizeEnd: () => ipcRenderer.send("overlay:resize-end"),
   getState: () => ipcRenderer.invoke("overlay:get"),

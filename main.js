@@ -19,7 +19,8 @@ app.commandLine.appendSwitch("disable-site-isolation-trials");
 app.commandLine.appendSwitch("disable-features", "Translate,site-per-process,IsolateOrigins,SpareRendererForSitePerProcess");
 app.commandLine.appendSwitch("renderer-process-limit", "1");
 
-let win = null, tray = null, settingsWin = null, keysWin = null;
+let win = null, tray = null, settingsWin = null, keysWin = null, hudWin = null;
+let betaWanted = false;     // mode bêta activé (pour le HUD plein écran)
 let opacity = 1.0;          // 0.3 → 1.0
 let clickThrough = false;   // les clics passent au jeu
 let updateAvailable = "";   // version dispo (mise à jour MANUELLE via le site, pas d'auto-install)
@@ -114,6 +115,33 @@ function broadcastKeys() {
   [win, settingsWin, keysWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("keys:changed", { actions: ACTIONS, map: keymap }); });
 }
 
+/* --- HUD plein écran : marqueurs alignés sur la carte du jeu (bêta) --- */
+function openHud() {
+  if (hudWin && !hudWin.isDestroyed()) return;
+  const b = screen.getPrimaryDisplay().bounds;
+  hudWin = new BrowserWindow({
+    x: b.x, y: b.y, width: b.width, height: b.height,
+    frame: false, transparent: true, resizable: false, movable: false,
+    focusable: false, skipTaskbar: true, hasShadow: false, fullscreenable: false,
+    backgroundColor: "#00000000",
+    webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.js") },
+  });
+  hudWin.setIgnoreMouseEvents(true, { forward: true });   // jamais bloquant pour le jeu
+  hudWin.setAlwaysOnTop(true, "screen-saver");
+  hudWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  hudWin.removeMenu();
+  hudWin.loadURL("https://33immortals.fr/hud?app=1&hud=1");
+  hudWin.on("closed", () => { hudWin = null; });
+  ulog("HUD ouvert");
+}
+function closeHud() {
+  if (hudWin && !hudWin.isDestroyed()) hudWin.close();
+  hudWin = null;
+}
+function reconcileHud() {
+  if (betaWanted && gameRunning) openHud(); else closeHud();
+}
+
 /* --- Détection du jeu (process 33Immortals.exe) --- */
 function broadcastGame() {
   [win, settingsWin, keysWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("overlay:game", { running: gameRunning }); });
@@ -126,7 +154,7 @@ function checkGame() {
     if (!err && stdout) {
       running = stdout.split(/\r?\n/).some((l) => /immortal/i.test(l) && !/overlay/i.test(l));
     }
-    if (running !== gameRunning) { gameRunning = running; broadcastGame(); ulog("game " + (running ? "détecté" : "fermé")); }
+    if (running !== gameRunning) { gameRunning = running; broadcastGame(); reconcileHud(); ulog("game " + (running ? "détecté" : "fermé")); }
   });
 }
 
@@ -180,6 +208,7 @@ ipcMain.handle("keys:set", (_e, id, accel) => {
 });
 ipcMain.handle("keys:reset", () => { ACTIONS.forEach((a) => { keymap[a.id] = a.def; }); saveKeys(); applyShortcuts(); broadcastKeys(); return { actions: ACTIONS, map: keymap }; });
 ipcMain.handle("overlay:game-get", () => ({ running: gameRunning }));
+ipcMain.on("overlay:beta", (_e, on) => { betaWanted = !!on; reconcileHud(); });
 ipcMain.handle("overlay:screen-source", async () => {
   try {
     const sources = await desktopCapturer.getSources({ types: ["screen"] });
