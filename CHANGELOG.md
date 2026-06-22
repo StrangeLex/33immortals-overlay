@@ -7,6 +7,20 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/) et le
 ## [Non publié]
 - Pipeline GitHub Actions : build + signature SignPath + publication automatique des Releases.
 - Distribution et mises à jour via **GitHub Releases**.
+- Carte du site : **niveaux de zoom plus fins** (paliers intermédiaires à la molette, aux boutons et au clavier) — corrige #1.
+
+## [1.0.23]
+- Clic sur un marqueur = **marqué « trouvé »** (grisé/estompé), reclic pour annuler — corrige #2.
+- Bouton **« Réactiver les marqueurs trouvés »** dans les options (FR/EN) dès qu'au moins un est trouvé.
+- Nouvelle action de raccourci configurable : **réactiver tous les marqueurs trouvés**.
+
+## [1.0.22]
+- Les liens externes s'ouvrent dans le navigateur par défaut.
+
+## [1.0.20]
+- Système de langue **français / anglais** (détection auto, choix mémorisé).
+- Position et opacité de la fenêtre mémorisées entre les sessions.
+- Création de partie directement depuis l'app (pseudo enregistré).
 
 ## [1.0.7]
 - Éditeur de **touches** personnalisables (3ᵉ fenêtre) : tous les raccourcis remappables.
