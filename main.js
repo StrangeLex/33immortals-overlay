@@ -71,6 +71,7 @@ const ACTIONS = [
   { id: "cat_coffre_elite", label: "Catégorie : Coffre élite",    def: "" },
   { id: "cat_altar",        label: "Catégorie : Autel",           def: "" },
   { id: "cat_secret",       label: "Catégorie : Chambre secrète", def: "" },
+  { id: "reset_found",      label: "Réactiver les marqueurs trouvés", def: "" },
 ];
 /* Mémorisation de la fenêtre (position, taille, opacité) entre les sessions. */
 let winState = {};
@@ -284,6 +285,9 @@ function sendCat(cat) {
   if (win && !win.isDestroyed()) win.webContents.send("overlay:cat", cat);
   if (settingsWin && !settingsWin.isDestroyed()) settingsWin.webContents.send("overlay:cat", cat);
 }
+function sendResetFound() {
+  [win, settingsWin, hudWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("overlay:reset-found"); });
+}
 function dispatch(id) {
   switch (id) {
     case "toggle": return toggleShow();
@@ -296,6 +300,7 @@ function dispatch(id) {
     case "var_A": return sendVariant("A");
     case "var_B": return sendVariant("B");
     case "var_C": return sendVariant("C");
+    case "reset_found": return sendResetFound();
   }
   if (id.indexOf("cat_") === 0) sendCat(id.slice(4));   // catégorie de marqueur
 }
