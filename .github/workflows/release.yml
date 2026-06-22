@@ -41,7 +41,9 @@ jobs:
           if-no-files-found: error
 
       - name: Demande de signature SignPath
+        id: signpath
         if: env.HAS_SIGNPATH == 'true'
+        continue-on-error: true        # si la signature échoue, on publie quand même (non signé)
         uses: signpath/github-action-submit-signing-request@v1
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -53,8 +55,12 @@ jobs:
           output-artifact-directory: dist          # remplace l'exe par sa version signée
 
       - name: Régénère latest.yml depuis l'exe SIGNÉ
-        if: env.HAS_SIGNPATH == 'true'
+        if: steps.signpath.outcome == 'success'
         run: node gen-update-metadata.js
+
+      - name: État de la signature
+        run: echo "Signature SignPath = ${{ steps.signpath.outcome || 'non configurée' }}"
+        shell: bash
 
       # --- Publication de la Release GitHub (flux de mise à jour electron-updater) ---
       - name: Crée / met à jour la Release
