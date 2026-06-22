@@ -84,9 +84,14 @@ Everything is editable in the **Keys** window (one shortcut per marker category 
 ## 🖼️ Aperçu / Preview
 
 <div align="center">
-<img src="https://33immortals.fr/img/screens/s1.jpg" width="32%" />
-<img src="https://33immortals.fr/img/screens/s4.jpg" width="32%" />
-<img src="https://33immortals.fr/img/screens/s9.jpg" width="32%" />
+
+_La carte en superposition, en jeu / The map overlaid, in-game_
+
+<img src="https://33immortals.fr/screen/screen1.png" width="80%" />
+<br/>
+<img src="https://33immortals.fr/screen/screen2.png" width="49%" />
+<img src="https://33immortals.fr/screen/screen3.png" width="49%" />
+
 </div>
 
 ---
