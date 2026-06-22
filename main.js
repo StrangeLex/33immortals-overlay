@@ -13,7 +13,11 @@ const { autoUpdater } = require("electron-updater");
 /* Langue de l'app (fr/en) — persistée ; pilote le préfixe d'URL du site. */
 let appLang = "fr";
 function langFile() { return path.join(app.getPath("userData"), "lang.txt"); }
-function loadLang() { try { const v = fs.readFileSync(langFile(), "utf8").trim(); if (v === "en" || v === "fr") appLang = v; } catch (e) {} }
+function loadLang() {
+  // 1) choix manuel mémorisé ; 2) sinon langue de l'OS (fr → français, autre → anglais)
+  try { const v = fs.readFileSync(langFile(), "utf8").trim(); if (v === "en" || v === "fr") { appLang = v; return; } } catch (e) {}
+  try { appLang = (app.getLocale() || "").toLowerCase().indexOf("fr") === 0 ? "fr" : "en"; } catch (e) { appLang = "fr"; }
+}
 function saveLang() { try { fs.writeFileSync(langFile(), appLang); } catch (e) {} }
 function base() { return "https://33immortals.fr" + (appLang === "en" ? "/en" : ""); }
 function urlMap() { return base() + "/carte?app=1"; }
@@ -60,6 +64,22 @@ const ACTIONS = [
   { id: "cat_altar",        label: "Catégorie : Autel",           def: "" },
   { id: "cat_secret",       label: "Catégorie : Chambre secrète", def: "" },
 ];
+/* Mémorisation de la fenêtre (position, taille, opacité) entre les sessions. */
+let winState = {};
+function stateFile() { return path.join(app.getPath("userData"), "winstate.json"); }
+function loadState() { try { const s = JSON.parse(fs.readFileSync(stateFile(), "utf8")); if (s && typeof s === "object") winState = s; } catch (e) {} }
+function saveState() { try { fs.writeFileSync(stateFile(), JSON.stringify(winState)); } catch (e) {} }
+function rememberBounds() {
+  if (win && !win.isDestroyed() && !win.isMinimized()) { winState.bounds = win.getBounds(); saveState(); }
+}
+function boundsOnScreen(b) {   // évite une fenêtre restaurée hors écran
+  if (!b) return false;
+  return screen.getAllDisplays().some((d) => {
+    const w = d.workArea;
+    return b.x < w.x + w.width - 40 && b.x + b.width > w.x + 40 && b.y < w.y + w.height - 20 && b.y + b.height > w.y + 20;
+  });
+}
+
 let keymap = {};
 function keysFile() { return path.join(app.getPath("userData"), "keys.json"); }
 function loadKeys() {
@@ -70,8 +90,11 @@ function loadKeys() {
 function saveKeys() { try { fs.writeFileSync(keysFile(), JSON.stringify(keymap)); } catch (e) {} }
 
 function createWindow() {
+  const b = boundsOnScreen(winState.bounds) ? winState.bounds : null;   // restaure la position si valide
+  if (typeof winState.opacity === "number") opacity = Math.min(1, Math.max(0.3, winState.opacity));
   win = new BrowserWindow({
-    width: 620, height: 540, minWidth: 340, minHeight: 280,
+    x: b ? b.x : undefined, y: b ? b.y : undefined,
+    width: b ? b.width : 620, height: b ? b.height : 540, minWidth: 340, minHeight: 280,
     frame: false, transparent: true, resizable: true, skipTaskbar: false,
     backgroundColor: "#00000000", hasShadow: false, title: "33 Immortals Overlay",
     icon: path.join(__dirname, "build", "icon.ico"),
@@ -83,8 +106,10 @@ function createWindow() {
   });
   win.setAlwaysOnTop(true, "screen-saver");        // au-dessus même des jeux plein écran (fenêtré/borderless)
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  win.setOpacity(opacity);                         // restaure l'opacité mémorisée
   win.removeMenu();
   win.loadURL(urlMap());
+  win.on("moved", rememberBounds);                 // mémorise la position au déplacement
   win.on("closed", () => { win = null; });
 }
 
@@ -186,6 +211,7 @@ function broadcastState() {
 function setOpacity(v) {
   opacity = Math.min(1, Math.max(0.3, v));
   if (win) win.setOpacity(opacity);
+  winState.opacity = opacity; saveState();         // mémorise l'opacité
   broadcastState();
 }
 function toggleClickThrough() {
@@ -234,7 +260,7 @@ ipcMain.handle("overlay:screen-source", async () => {
   } catch (e) { ulog("screen-source KO " + (e && e.message)); return null; }
 });
 ipcMain.on("overlay:resize-start", () => { resizing = true; resizeTick(); });
-ipcMain.on("overlay:resize-end", () => { resizing = false; });
+ipcMain.on("overlay:resize-end", () => { resizing = false; rememberBounds(); });
 ipcMain.handle("overlay:get", () => ({ opacity, clickThrough }));
 
 function sendVariant(v) {
@@ -334,6 +360,7 @@ else {
   app.whenReady().then(() => {
     loadLang();
     loadKeys();
+    loadState();
     createWindow();
     createTray();
     applyShortcuts();
@@ -341,6 +368,6 @@ else {
     checkGame();
     setInterval(checkGame, 5000);   // surveille le lancement / fermeture du jeu
   });
-  app.on("will-quit", () => globalShortcut.unregisterAll());
+  app.on("will-quit", () => { rememberBounds(); globalShortcut.unregisterAll(); });
   app.on("window-all-closed", () => { /* reste en zone de notification */ });
 }
