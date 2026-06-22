@@ -1,8 +1,11 @@
 {
   "name": "immortals-overlay",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "33 Immortals — overlay de la carte interactive (toujours au-dessus du jeu)",
   "author": "33 Immortals FR",
+  "license": "BSD-3-Clause",
+  "homepage": "https://33immortals.fr",
+  "repository": { "type": "git", "url": "https://github.com/StrangeLex/33immortals-overlay.git" },
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -21,7 +24,7 @@
     "icon": "build/icon.ico",
     "directories": { "output": "dist" },
     "files": ["main.js", "preload.js", "build/icon.ico"],
-    "publish": [{ "provider": "generic", "url": "https://33immortals.fr/app/" }],
+    "publish": [{ "provider": "github", "owner": "StrangeLex", "repo": "33immortals-overlay" }],
     "win": { "target": ["nsis"], "artifactName": "33ImmortalsOverlay-Setup-${version}.${ext}" },
     "nsis": {
       "oneClick": true,

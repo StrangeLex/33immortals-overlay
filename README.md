@@ -9,10 +9,12 @@
 
 [![Télécharger / Download](https://img.shields.io/badge/⬇️_T%C3%A9l%C3%A9charger_%7C_Download-Windows-e8a83c?style=for-the-badge)](https://33immortals.fr/download)
 
+[![Release](https://img.shields.io/github/v/release/StrangeLex/33immortals-overlay?style=flat-square&color=e8a83c)](https://github.com/StrangeLex/33immortals-overlay/releases/latest)
+[![Build](https://img.shields.io/github/actions/workflow/status/StrangeLex/33immortals-overlay/release.yml?style=flat-square)](https://github.com/StrangeLex/33immortals-overlay/actions)
+[![Downloads](https://img.shields.io/github/downloads/StrangeLex/33immortals-overlay/total?style=flat-square&color=2ea44f)](https://github.com/StrangeLex/33immortals-overlay/releases)
 ![Windows](https://img.shields.io/badge/Windows_10_/_11-64--bit-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![Electron](https://img.shields.io/badge/Electron-31-47848F?style=flat-square&logo=electron&logoColor=white)
-![Auto-update](https://img.shields.io/badge/Mise_%C3%A0_jour_auto-%E2%9C%93-2ea44f?style=flat-square)
-![License](https://img.shields.io/badge/licence-voir_LICENSE-blue?style=flat-square)
+[![License](https://img.shields.io/github/license/StrangeLex/33immortals-overlay?style=flat-square)](LICENSE)
 
 <img src="https://33immortals.fr/img/keyart.png" alt="33 Immortals" width="100%" />
 
@@ -114,5 +116,16 @@ Coquille **[Electron](https://www.electronjs.org/)** minimale qui charge `33immo
 - `preload.js` — pont `contextBridge` page ↔ app.
 - `package.json` — config `electron-builder` (NSIS + flux de mise à jour).
 
+## 🔏 Signature / Code signing
+Les installeurs sont publiés via **GitHub Actions** et signés par
+[**SignPath Foundation**](https://signpath.org/open-source) (signature gratuite
+pour l'open-source) → la réputation Windows se construit au fil des
+téléchargements. Détails : [`SIGNING.md`](SIGNING.md).
+Releases are built by **GitHub Actions** and signed via **SignPath Foundation**
+(free OSS code signing). See [`SIGNING.md`](SIGNING.md).
+
+## 🤝 Contribuer / Contributing
+Voir / see [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CHANGELOG.md`](CHANGELOG.md) · [`SECURITY.md`](SECURITY.md)
+
 ## 📄 Licence / License
-Voir / see [`LICENSE`](LICENSE).
+[BSD 3-Clause](LICENSE).

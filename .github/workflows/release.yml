@@ -1,0 +1,68 @@
+name: Release
+
+# Déclenché en poussant un tag de version, ex. : git tag v1.0.8 && git push --tags
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write          # nécessaire pour créer la Release
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      # Signé seulement si le secret SignPath est configuré (sinon release non signée)
+      HAS_SIGNPATH: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (electron-builder, non signé)
+        run: npx electron-builder --win --x64 --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      # --- Signature de code via SignPath (gratuit pour l'open-source) ---
+      - name: Upload de l'installeur pour SignPath
+        if: env.HAS_SIGNPATH == 'true'
+        id: unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-installer
+          path: dist/33ImmortalsOverlay-Setup-*.exe
+          if-no-files-found: error
+
+      - name: Demande de signature SignPath
+        if: env.HAS_SIGNPATH == 'true'
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: 33immortals-overlay
+          signing-policy-slug: release-signing
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: dist          # remplace l'exe par sa version signée
+
+      - name: Régénère latest.yml depuis l'exe SIGNÉ
+        if: env.HAS_SIGNPATH == 'true'
+        run: node gen-update-metadata.js
+
+      # --- Publication de la Release GitHub (flux de mise à jour electron-updater) ---
+      - name: Crée / met à jour la Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          fail_on_unmatched_files: true
+          files: |
+            dist/33ImmortalsOverlay-Setup-*.exe
+            dist/latest.yml
+            dist/*.blockmap

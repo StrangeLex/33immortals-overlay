@@ -1,0 +1,36 @@
+name: 🐛 Bug / Bogue
+description: Signaler un problème avec l'application / Report an app issue
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Description
+      description: Que se passe-t-il ? / What happens?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire / Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+  - type: input
+    id: version
+    attributes:
+      label: Version de l'app
+      placeholder: "ex. 1.0.8"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Version de Windows
+      placeholder: "ex. Windows 11 23H2"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Captures / logs (optionnel)
+      description: Le journal se trouve dans %AppData%/33 Immortals Overlay/update.log
