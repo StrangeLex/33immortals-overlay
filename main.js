@@ -10,8 +10,16 @@ const fs = require("fs");
 const { exec } = require("child_process");
 const { autoUpdater } = require("electron-updater");
 
-const SITE = "https://33immortals.fr/carte?app=1";
-const SETTINGS_URL = "https://33immortals.fr/carte?app=1&panel=1";
+/* Langue de l'app (fr/en) — persistée ; pilote le préfixe d'URL du site. */
+let appLang = "fr";
+function langFile() { return path.join(app.getPath("userData"), "lang.txt"); }
+function loadLang() { try { const v = fs.readFileSync(langFile(), "utf8").trim(); if (v === "en" || v === "fr") appLang = v; } catch (e) {} }
+function saveLang() { try { fs.writeFileSync(langFile(), appLang); } catch (e) {} }
+function base() { return "https://33immortals.fr" + (appLang === "en" ? "/en" : ""); }
+function urlMap() { return base() + "/carte?app=1"; }
+function urlSettings() { return base() + "/carte?app=1&panel=1"; }
+function urlHud() { return base() + "/hud?app=1&hud=1"; }
+function urlKeys() { return base() + "/touches?app=1&panel=1"; }
 
 /* Réduit le nombre de processus Chromium et la charge CPU pour une simple
    fenêtre (pas d'isolation par site, pas de fonctions superflues). */
@@ -76,7 +84,7 @@ function createWindow() {
   win.setAlwaysOnTop(true, "screen-saver");        // au-dessus même des jeux plein écran (fenêtré/borderless)
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.removeMenu();
-  win.loadURL(SITE);
+  win.loadURL(urlMap());
   win.on("closed", () => { win = null; });
 }
 
@@ -93,7 +101,7 @@ function openSettings() {
     webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.js") },
   });
   settingsWin.removeMenu();
-  settingsWin.loadURL(SETTINGS_URL);
+  settingsWin.loadURL(urlSettings());
   settingsWin.on("closed", () => { settingsWin = null; });
 }
 
@@ -108,7 +116,7 @@ function openKeys() {
     webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.js") },
   });
   keysWin.removeMenu();
-  keysWin.loadURL("https://33immortals.fr/touches?app=1&panel=1");
+  keysWin.loadURL(urlKeys());
   keysWin.on("closed", () => { keysWin = null; });
 }
 function broadcastKeys() {
@@ -130,7 +138,7 @@ function openHud() {
   hudWin.setAlwaysOnTop(true, "screen-saver");
   hudWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   hudWin.removeMenu();
-  hudWin.loadURL("https://33immortals.fr/hud?app=1&hud=1");
+  hudWin.loadURL(urlHud());
   hudWin.on("closed", () => { hudWin = null; });
   ulog("HUD ouvert");
 }
@@ -209,6 +217,16 @@ ipcMain.handle("keys:set", (_e, id, accel) => {
 ipcMain.handle("keys:reset", () => { ACTIONS.forEach((a) => { keymap[a.id] = a.def; }); saveKeys(); applyShortcuts(); broadcastKeys(); return { actions: ACTIONS, map: keymap }; });
 ipcMain.handle("overlay:game-get", () => ({ running: gameRunning }));
 ipcMain.on("overlay:beta", (_e, on) => { betaWanted = !!on; reconcileHud(); });
+ipcMain.handle("overlay:get-lang", () => appLang);
+ipcMain.on("overlay:set-lang", (_e, lang) => {
+  lang = (lang === "en") ? "en" : "fr";
+  if (lang === appLang) return;
+  appLang = lang; saveLang();
+  if (win && !win.isDestroyed()) win.loadURL(urlMap());
+  if (settingsWin && !settingsWin.isDestroyed()) settingsWin.loadURL(urlSettings());
+  if (keysWin && !keysWin.isDestroyed()) keysWin.loadURL(urlKeys());
+  if (hudWin && !hudWin.isDestroyed()) hudWin.loadURL(urlHud());
+});
 ipcMain.handle("overlay:screen-source", async () => {
   try {
     const sources = await desktopCapturer.getSources({ types: ["screen"] });
@@ -314,6 +332,7 @@ if (!app.requestSingleInstanceLock()) { app.quit(); }
 else {
   app.on("second-instance", () => { if (win) { win.show(); win.focus(); } });
   app.whenReady().then(() => {
+    loadLang();
     loadKeys();
     createWindow();
     createTray();
