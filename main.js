@@ -24,6 +24,13 @@ function urlMap() { return base() + "/carte?app=1"; }
 function urlSettings() { return base() + "/carte?app=1&panel=1"; }
 function urlHud() { return base() + "/hud?app=1&hud=1"; }
 function urlKeys() { return base() + "/touches?app=1&panel=1"; }
+// Les liens externes (http/https) s'ouvrent dans le navigateur par défaut, pas dans l'app.
+function openLinksExternally(w) {
+  w.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:\/\//i.test(url)) { shell.openExternal(url); return { action: "deny" }; }
+    return { action: "allow" };
+  });
+}
 
 /* Réduit le nombre de processus Chromium et la charge CPU pour une simple
    fenêtre (pas d'isolation par site, pas de fonctions superflues). */
@@ -110,6 +117,7 @@ function createWindow() {
   win.setOpacity(opacity);                         // restaure l'opacité mémorisée
   win.removeMenu();
   win.loadURL(urlMap());
+  openLinksExternally(win);
   win.on("moved", rememberBounds);                 // mémorise la position au déplacement
   win.on("closed", () => { win = null; });
 }
@@ -128,6 +136,7 @@ function openSettings() {
   });
   settingsWin.removeMenu();
   settingsWin.loadURL(urlSettings());
+  openLinksExternally(settingsWin);
   settingsWin.on("closed", () => { settingsWin = null; });
 }
 
@@ -143,6 +152,7 @@ function openKeys() {
   });
   keysWin.removeMenu();
   keysWin.loadURL(urlKeys());
+  openLinksExternally(keysWin);
   keysWin.on("closed", () => { keysWin = null; });
 }
 function broadcastKeys() {
@@ -165,6 +175,7 @@ function openHud() {
   hudWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   hudWin.removeMenu();
   hudWin.loadURL(urlHud());
+  openLinksExternally(hudWin);
   hudWin.on("closed", () => { hudWin = null; });
   ulog("HUD ouvert");
 }
