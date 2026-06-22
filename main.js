@@ -118,8 +118,13 @@ function broadcastGame() {
   [win, settingsWin, keysWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("overlay:game", { running: gameRunning }); });
 }
 function checkGame() {
-  exec('tasklist /FI "IMAGENAME eq 33Immortals.exe" /NH', { windowsHide: true }, (err, stdout) => {
-    const running = !err && /33immortals\.exe/i.test(stdout || "");
+  // Liste tous les process et cherche un .exe contenant « immortal » MAIS pas « overlay »
+  // (pour ne pas se détecter soi-même : « 33 Immortals Overlay.exe »).
+  exec("tasklist /NH /FO CSV", { windowsHide: true, maxBuffer: 8 * 1024 * 1024 }, (err, stdout) => {
+    let running = false;
+    if (!err && stdout) {
+      running = stdout.split(/\r?\n/).some((l) => /immortal/i.test(l) && !/overlay/i.test(l));
+    }
     if (running !== gameRunning) { gameRunning = running; broadcastGame(); ulog("game " + (running ? "détecté" : "fermé")); }
   });
 }
