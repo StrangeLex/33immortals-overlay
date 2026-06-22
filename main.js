@@ -4,7 +4,7 @@
    avec une barre de titre propre (déplacer / opacité / réduire / fermer),
    clic-traversant et mise à jour automatique.
    ============================================================ */
-const { app, BrowserWindow, globalShortcut, Tray, Menu, nativeImage, ipcMain, screen, desktopCapturer } = require("electron");
+const { app, BrowserWindow, globalShortcut, Tray, Menu, nativeImage, ipcMain, screen, desktopCapturer, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
@@ -22,7 +22,8 @@ app.commandLine.appendSwitch("renderer-process-limit", "1");
 let win = null, tray = null, settingsWin = null, keysWin = null;
 let opacity = 1.0;          // 0.3 → 1.0
 let clickThrough = false;   // les clics passent au jeu
-let updateReady = false;    // une mise à jour est téléchargée et prête
+let updateAvailable = "";   // version dispo (mise à jour MANUELLE via le site, pas d'auto-install)
+const DOWNLOAD_URL = "https://33immortals.fr/download";
 let resizing = false;       // redimensionnement custom en cours (fenêtre transparente)
 let gameRunning = false;    // le jeu (33Immortals.exe) est-il lancé ?
 
@@ -231,8 +232,8 @@ function refreshTray() {
     { label: (clickThrough ? "✓ " : "") + "Clic-traversant  (Ctrl+Alt+C)", click: toggleClickThrough },
     { type: "separator" },
   ];
-  if (updateReady) {
-    items.push({ label: "🔄 Redémarrer pour installer la mise à jour", click: () => { try { autoUpdater.quitAndInstall(); } catch (e) { app.quit(); } } });
+  if (updateAvailable) {
+    items.push({ label: "⬇️ Télécharger la mise à jour " + updateAvailable, click: () => shell.openExternal(DOWNLOAD_URL) });
   } else {
     items.push({ label: "Vérifier les mises à jour", click: () => autoUpdater.checkForUpdates().catch(() => {}) });
   }
@@ -246,6 +247,7 @@ function createTray() {
     tray.setToolTip("33 Immortals Overlay");
     refreshTray();
     tray.on("click", toggleShow);
+    tray.on("balloon-click", () => { if (updateAvailable) shell.openExternal(DOWNLOAD_URL); });
   } catch (e) {}
 }
 
@@ -253,29 +255,29 @@ function createTray() {
    À chaque lancement : vérifie, télécharge en arrière-plan, installe à la
    fermeture de l'app. Donc : on relance → MAJ installée. */
 function setupUpdates() {
-  autoUpdater.autoDownload = true;            // télécharge dès qu'une version est dispo
-  autoUpdater.autoInstallOnAppQuit = true;    // installe quand l'utilisateur quitte → effective au relancement
+  // IMPORTANT : l'app NE se modifie JAMAIS toute seule (pas d'auto-download ni d'auto-install).
+  // Elle vérifie seulement et prévient ; la mise à jour se fait manuellement via le site.
+  // (Évite les réinstallations silencieuses qui échouaient sur un exe non signé.)
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = false;
   autoUpdater.logger = { info: ulog, warn: ulog, error: ulog, debug: () => {} };
 
-  autoUpdater.on("checking-for-update", () => ulog("checking-for-update"));
-  autoUpdater.on("update-available", (i) => ulog("update-available " + (i && i.version)));
-  autoUpdater.on("update-not-available", (i) => ulog("up-to-date " + (i && i.version)));
-  autoUpdater.on("error", (e) => ulog("error " + (e && e.message)));
-  autoUpdater.on("download-progress", (p) => ulog("downloading " + Math.round(p.percent) + "%"));
-  autoUpdater.on("update-downloaded", (i) => {
-    ulog("update-downloaded " + (i && i.version) + " — sera installée à la fermeture");
-    updateReady = true;
+  autoUpdater.on("update-available", (i) => {
+    updateAvailable = (i && i.version) ? "v" + i.version : "";
+    ulog("update-available " + updateAvailable);
     refreshTray();
     try {
       if (tray && tray.displayBalloon) {
-        tray.displayBalloon({ title: "33 Immortals Overlay", content: "Mise à jour " + (i && i.version) + " prête — elle s'installera à la fermeture de l'app." });
+        tray.displayBalloon({ title: "33 Immortals Overlay", content: "Nouvelle version " + updateAvailable + " disponible — clique pour la télécharger." });
       }
     } catch (e) {}
   });
+  autoUpdater.on("update-not-available", () => ulog("up-to-date"));
+  autoUpdater.on("error", (e) => ulog("update error " + (e && e.message)));
 
   const check = () => autoUpdater.checkForUpdates().catch((e) => ulog("check failed " + (e && e.message)));
   check();                                   // au lancement
-  setInterval(check, 30 * 60 * 1000);        // puis toutes les 30 min (sessions longues)
+  setInterval(check, 60 * 60 * 1000);        // re-vérifie chaque heure
 }
 
 // Instance unique

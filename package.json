@@ -1,6 +1,6 @@
 {
   "name": "immortals-overlay",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "33 Immortals — overlay de la carte interactive (toujours au-dessus du jeu)",
   "author": "33 Immortals FR",
   "license": "BSD-3-Clause",
@@ -30,7 +30,7 @@
       "oneClick": true,
       "perMachine": false,
       "allowToChangeInstallationDirectory": false,
-      "deleteAppDataOnUninstall": true,
+      "deleteAppDataOnUninstall": false,
       "differentialPackage": true,
       "artifactName": "33ImmortalsOverlay-Setup-${version}.${ext}"
     }
