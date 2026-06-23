@@ -234,7 +234,13 @@ function setOpacity(v) {
 }
 function toggleClickThrough() {
   clickThrough = !clickThrough;
-  if (win) win.setIgnoreMouseEvents(clickThrough, { forward: true });
+  if (win) {
+    win.setIgnoreMouseEvents(clickThrough, { forward: true });
+    // En clic-traversant : fenêtre non-activante → les clics (marqueurs) sont reçus
+    // mais le focus reste au jeu (pas besoin de recliquer dans le jeu).
+    win.setFocusable(!clickThrough);
+    if (clickThrough) win.blur();   // rend le focus immédiatement au jeu
+  }
   refreshTray(); broadcastState();
 }
 function toggleShow() { if (win) (win.isVisible() ? win.hide() : win.show()); }

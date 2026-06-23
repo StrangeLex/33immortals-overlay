@@ -9,6 +9,9 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 - Distribution and updates via **GitHub Releases**.
 - On-site map: **finer-grained zoom levels** (intermediate steps on wheel, buttons and keyboard) — fixes #1.
 
+## [1.0.27]
+- Click-through mode: the overlay no longer steals focus from the game when you click a marker (window made non-activating while click-through is on).
+
 ## [1.0.26]
 - **Credits**: map data is based on the community Google Doc by **__to**, with Romalllka, .tobbez, sejemsom, Kitty_sparkles, Wasted_Warlord (N00b) and Kag_B — now shown on the interactive map and at the bottom of the app settings.
 
