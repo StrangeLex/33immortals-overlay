@@ -80,6 +80,9 @@ jobs:
             ### Links
             - 🌐 Bilingual app (English / French) — website: <https://33immortals.fr/download>
             - 📝 Full changelog: [CHANGELOG.md](https://github.com/StrangeLex/33immortals-overlay/blob/main/CHANGELOG.md)
+
+            ### Credits
+            Map data is based on the community [Google Doc](https://docs.google.com/document/d/1A-ihBD9WTGZl7Yi2OqbQJL6gN_2sA2AX3gWuCNvlQ90/edit) created by **__to**, with Romalllka, .tobbez, sejemsom, Kitty_sparkles, Wasted_Warlord (N00b) and Kag_B. Huge thanks to them! 🙏
           generate_release_notes: true
           files: |
             dist/33ImmortalsOverlay-Setup-*.exe
