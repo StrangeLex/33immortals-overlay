@@ -9,6 +9,9 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 - Distribution and updates via **GitHub Releases**.
 - On-site map: **finer-grained zoom levels** (intermediate steps on wheel, buttons and keyboard) — fixes #1.
 
+## [1.0.28]
+- New unbound shortcut to toggle the **Bone Urn** layer; adjustable **bone urn icon size** (down to 40%) in the map settings.
+
 ## [1.0.27]
 - Click-through mode: the overlay no longer steals focus from the game when you click a marker (window made non-activating while click-through is on).
 

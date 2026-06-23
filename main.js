@@ -71,6 +71,7 @@ const ACTIONS = [
   { id: "cat_coffre_elite", label: "Catégorie : Coffre élite",    def: "" },
   { id: "cat_altar",        label: "Catégorie : Autel",           def: "" },
   { id: "cat_secret",       label: "Catégorie : Chambre secrète", def: "" },
+  { id: "cat_boneurn",      label: "Catégorie : Urne d'os",       def: "" },
   { id: "reset_found",      label: "Réactiver les marqueurs trouvés", def: "" },
   { id: "realm_inferno",    label: "Carte : Enfer (Hell)",         def: "" },
   { id: "realm_purgatorio", label: "Carte : Purgatoire (Purgatorio)", def: "" },
