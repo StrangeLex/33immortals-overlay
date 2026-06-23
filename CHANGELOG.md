@@ -9,6 +9,10 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 - Distribution and updates via **GitHub Releases**.
 - On-site map: **finer-grained zoom levels** (intermediate steps on wheel, buttons and keyboard) — fixes #1.
 
+## [1.0.24]
+- New unbound shortcuts to switch realm: **Hell / Purgatory / Paradise** — in a party they replicate to everyone.
+- New unbound shortcut to **open / close the map with an animation** — in a shared party it shows/hides for all players.
+
 ## [1.0.23]
 - Clicking a marker now **marks it as found** (greyed out / dimmed), click again to undo — fixes #2.
 - **"Restore found markers"** button in the options (EN/FR) as soon as at least one is found.

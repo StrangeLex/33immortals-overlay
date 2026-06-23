@@ -72,6 +72,10 @@ const ACTIONS = [
   { id: "cat_altar",        label: "Catégorie : Autel",           def: "" },
   { id: "cat_secret",       label: "Catégorie : Chambre secrète", def: "" },
   { id: "reset_found",      label: "Réactiver les marqueurs trouvés", def: "" },
+  { id: "realm_inferno",    label: "Carte : Enfer (Hell)",         def: "" },
+  { id: "realm_purgatorio", label: "Carte : Purgatoire (Purgatorio)", def: "" },
+  { id: "realm_paradiso",   label: "Carte : Paradis (Paradiso)",   def: "" },
+  { id: "map_anim_toggle",  label: "Ouvrir / fermer la carte (animation)", def: "" },
 ];
 /* Mémorisation de la fenêtre (position, taille, opacité) entre les sessions. */
 let winState = {};
@@ -288,6 +292,14 @@ function sendCat(cat) {
 function sendResetFound() {
   [win, settingsWin, hudWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("overlay:reset-found"); });
 }
+function sendRealm(realm) {
+  if (win && !win.isDestroyed()) win.webContents.send("overlay:realm", realm);
+  if (settingsWin && !settingsWin.isDestroyed()) settingsWin.webContents.send("overlay:realm", realm);
+}
+function sendMapToggle() {
+  if (win && !win.isDestroyed()) win.webContents.send("overlay:map-toggle");
+  if (settingsWin && !settingsWin.isDestroyed()) settingsWin.webContents.send("overlay:map-toggle");
+}
 function dispatch(id) {
   switch (id) {
     case "toggle": return toggleShow();
@@ -301,6 +313,10 @@ function dispatch(id) {
     case "var_B": return sendVariant("B");
     case "var_C": return sendVariant("C");
     case "reset_found": return sendResetFound();
+    case "realm_inferno": return sendRealm("inferno");
+    case "realm_purgatorio": return sendRealm("purgatorio");
+    case "realm_paradiso": return sendRealm("paradiso");
+    case "map_anim_toggle": return sendMapToggle();
   }
   if (id.indexOf("cat_") === 0) sendCat(id.slice(4));   // catégorie de marqueur
 }
