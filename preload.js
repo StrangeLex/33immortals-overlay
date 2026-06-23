@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld("overlay", {
   onCat: (cb) => ipcRenderer.on("overlay:cat", (_e, c) => cb(c)),
   onResetFound: (cb) => ipcRenderer.on("overlay:reset-found", () => cb()),
   onRealm: (cb) => ipcRenderer.on("overlay:realm", (_e, r) => cb(r)),
+  onRealmNext: (cb) => ipcRenderer.on("overlay:realm-next", () => cb()),
   onMapToggle: (cb) => ipcRenderer.on("overlay:map-toggle", () => cb()),
   getGame: () => ipcRenderer.invoke("overlay:game-get"),
   onGame: (cb) => ipcRenderer.on("overlay:game", (_e, s) => cb(s)),

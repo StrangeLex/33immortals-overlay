@@ -75,6 +75,7 @@ const ACTIONS = [
   { id: "realm_inferno",    label: "Carte : Enfer (Hell)",         def: "" },
   { id: "realm_purgatorio", label: "Carte : Purgatoire (Purgatorio)", def: "" },
   { id: "realm_paradiso",   label: "Carte : Paradis (Paradiso)",   def: "" },
+  { id: "realm_next",       label: "Carte suivante (Enfer → Purgatoire → Paradis)", def: "" },
   { id: "map_anim_toggle",  label: "Ouvrir / fermer la carte (animation)", def: "" },
 ];
 /* Mémorisation de la fenêtre (position, taille, opacité) entre les sessions. */
@@ -300,6 +301,10 @@ function sendMapToggle() {
   if (win && !win.isDestroyed()) win.webContents.send("overlay:map-toggle");
   if (settingsWin && !settingsWin.isDestroyed()) settingsWin.webContents.send("overlay:map-toggle");
 }
+function sendRealmNext() {
+  if (win && !win.isDestroyed()) win.webContents.send("overlay:realm-next");
+  if (settingsWin && !settingsWin.isDestroyed()) settingsWin.webContents.send("overlay:realm-next");
+}
 function dispatch(id) {
   switch (id) {
     case "toggle": return toggleShow();
@@ -316,6 +321,7 @@ function dispatch(id) {
     case "realm_inferno": return sendRealm("inferno");
     case "realm_purgatorio": return sendRealm("purgatorio");
     case "realm_paradiso": return sendRealm("paradiso");
+    case "realm_next": return sendRealmNext();
     case "map_anim_toggle": return sendMapToggle();
   }
   if (id.indexOf("cat_") === 0) sendCat(id.slice(4));   // catégorie de marqueur
