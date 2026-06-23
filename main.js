@@ -15,11 +15,14 @@ let appLang = "fr";
 function langFile() { return path.join(app.getPath("userData"), "lang.txt"); }
 function loadLang() {
   // 1) choix manuel mémorisé ; 2) sinon langue de l'OS (fr → français, autre → anglais)
-  try { const v = fs.readFileSync(langFile(), "utf8").trim(); if (v === "en" || v === "fr") { appLang = v; return; } } catch (e) {}
-  try { appLang = (app.getLocale() || "").toLowerCase().indexOf("fr") === 0 ? "fr" : "en"; } catch (e) { appLang = "fr"; }
+  try { const v = fs.readFileSync(langFile(), "utf8").trim(); if (v === "en" || v === "fr" || v === "ru") { appLang = v; return; } } catch (e) {}
+  try {
+    const loc = (app.getLocale() || "").toLowerCase();
+    appLang = loc.indexOf("fr") === 0 ? "fr" : (loc.indexOf("ru") === 0 ? "ru" : "en");
+  } catch (e) { appLang = "fr"; }
 }
 function saveLang() { try { fs.writeFileSync(langFile(), appLang); } catch (e) {} }
-function base() { return "https://33immortals.fr" + (appLang === "en" ? "/en" : ""); }
+function base() { return "https://33immortals.fr" + (appLang === "fr" ? "" : "/" + appLang); }
 function urlMap() { return base() + "/carte?app=1"; }
 function urlSettings() { return base() + "/carte?app=1&panel=1"; }
 function urlHud() { return base() + "/hud?app=1&hud=1"; }
@@ -271,7 +274,7 @@ ipcMain.on("overlay:beta", (_e, on) => { betaWanted = !!on; reconcileHud(); });
 ipcMain.handle("overlay:get-lang", () => appLang);
 ipcMain.handle("overlay:version", () => app.getVersion());
 ipcMain.on("overlay:set-lang", (_e, lang) => {
-  lang = (lang === "en") ? "en" : "fr";
+  lang = (lang === "en" || lang === "ru") ? lang : "fr";
   if (lang === appLang) return;
   appLang = lang; saveLang();
   if (win && !win.isDestroyed()) win.loadURL(urlMap());
