@@ -1,6 +1,5 @@
 name: Release
 
-# Triggered by pushing a version tag, e.g.: git tag v1.0.8 && git push --tags
 on:
   push:
     tags: ["v*"]
@@ -13,7 +12,6 @@ jobs:
   release:
     runs-on: windows-latest
     env:
-      # Signed only if the SignPath secret is configured (otherwise an unsigned release)
       HAS_SIGNPATH: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +28,6 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
-      # --- Code signing via SignPath (free for open source) ---
       - name: Upload installer for SignPath
         if: env.HAS_SIGNPATH == 'true'
         id: unsigned
@@ -62,7 +59,6 @@ jobs:
         run: echo "SignPath signing = ${{ steps.signpath.outcome || 'not configured' }}"
         shell: bash
 
-      # --- GitHub Release publishing (electron-updater feed) ---
       - name: Create / update the Release
         uses: softprops/action-gh-release@v2
         with:
@@ -72,16 +68,13 @@ jobs:
           body: |
             **33 Immortals Overlay** — the interactive map of *33 Immortals*, overlaid on top of the game.
 
-            ### Install
             Download **33ImmortalsOverlay-Setup-X.Y.Z.exe** below and run it. Existing installs update automatically on the next restart.
 
             > Not signed with a paid certificate yet → SmartScreen may show "Windows protected your PC". It's not a virus: **More info → Run anyway**.
 
-            ### Links
             - 🌐 Bilingual app (English / French) — website: <https://33immortals.fr/download>
             - 📝 Full changelog: [CHANGELOG.md](https://github.com/StrangeLex/33immortals-overlay/blob/main/CHANGELOG.md)
 
-            ### Credits
             Map data is based on the community [Google Doc](https://docs.google.com/document/d/1A-ihBD9WTGZl7Yi2OqbQJL6gN_2sA2AX3gWuCNvlQ90/edit) created by **__to**, with Romalllka, .tobbez, sejemsom, Kitty_sparkles, Wasted_Warlord (N00b) and Kag_B. Huge thanks to them! 🙏
           generate_release_notes: true
           files: |

@@ -1,7 +1,3 @@
-/* Régénère dist/latest.yml à partir de l'installeur SIGNÉ.
-   Indispensable : la signature modifie les octets de l'exe, donc le sha512
-   calculé par electron-builder (sur l'exe non signé) ne correspond plus.
-   electron-updater vérifie ce sha512 → sans ça, la mise à jour échoue. */
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -27,8 +23,6 @@ const yml =
 
 fs.writeFileSync(path.join(dir, "latest.yml"), yml);
 
-// Le blockmap (téléchargement différentiel) devient invalide après signature :
-// on le supprime → electron-updater fera un téléchargement complet (fiable).
 try { fs.unlinkSync(exePath + ".blockmap"); } catch (e) {}
 
 console.log(`latest.yml régénéré pour l'exe signé (${exe}, ${size} octets)`);

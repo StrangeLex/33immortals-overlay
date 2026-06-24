@@ -1,20 +1,12 @@
-/* ============================================================
-   33 Immortals Overlay — fenêtre légère toujours au-dessus du jeu.
-   Charge la carte interactive du site en mode application (?app=1),
-   avec une barre de titre propre (déplacer / opacité / réduire / fermer),
-   clic-traversant et mise à jour automatique.
-   ============================================================ */
 const { app, BrowserWindow, globalShortcut, Tray, Menu, nativeImage, ipcMain, screen, desktopCapturer, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
 const { autoUpdater } = require("electron-updater");
 
-/* Langue de l'app (fr/en) — persistée ; pilote le préfixe d'URL du site. */
 let appLang = "fr";
 function langFile() { return path.join(app.getPath("userData"), "lang.txt"); }
 function loadLang() {
-  // 1) choix manuel mémorisé ; 2) sinon langue de l'OS (fr → français, autre → anglais)
   try { const v = fs.readFileSync(langFile(), "utf8").trim(); if (v === "en" || v === "fr" || v === "ru") { appLang = v; return; } } catch (e) {}
   try {
     const loc = (app.getLocale() || "").toLowerCase();
@@ -27,7 +19,6 @@ function urlMap() { return base() + "/carte?app=1"; }
 function urlSettings() { return base() + "/carte?app=1&panel=1"; }
 function urlHud() { return base() + "/hud?app=1&hud=1"; }
 function urlKeys() { return base() + "/touches?app=1&panel=1"; }
-// Les liens externes (http/https) s'ouvrent dans le navigateur par défaut, pas dans l'app.
 function openLinksExternally(w) {
   w.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https?:\/\//i.test(url)) { shell.openExternal(url); return { action: "deny" }; }
@@ -35,30 +26,24 @@ function openLinksExternally(w) {
   });
 }
 
-/* Réduit le nombre de processus Chromium et la charge CPU pour une simple
-   fenêtre (pas d'isolation par site, pas de fonctions superflues). */
 app.commandLine.appendSwitch("disable-site-isolation-trials");
 app.commandLine.appendSwitch("disable-features", "Translate,site-per-process,IsolateOrigins,SpareRendererForSitePerProcess");
 app.commandLine.appendSwitch("renderer-process-limit", "1");
 
 let win = null, tray = null, settingsWin = null, keysWin = null, hudWin = null;
-let betaWanted = false;     // mode bêta activé (pour le HUD plein écran)
-let opacity = 1.0;          // 0.3 → 1.0
-let clickThrough = false;   // les clics passent au jeu
-let updateReady = false;    // une mise à jour est téléchargée, prête à installer
+let betaWanted = false;
+let opacity = 1.0;
+let clickThrough = false;
+let updateReady = false;
 let updateVersion = "";
 const DOWNLOAD_URL = "https://33immortals.fr/download";
-let resizing = false;       // redimensionnement custom en cours (fenêtre transparente)
-let gameRunning = false;    // le jeu (33Immortals.exe) est-il lancé ?
+let resizing = false;
+let gameRunning = false;
 
-/* Journal de mise à jour (dans %AppData%/33 Immortals Overlay/update.log) — utile pour diagnostiquer */
 function ulog(msg) {
   try { fs.appendFileSync(path.join(app.getPath("userData"), "update.log"), "[" + new Date().toISOString() + "] " + msg + "\n"); } catch (e) {}
 }
 
-/* --- Raccourcis clavier PERSONNALISABLES ---
-   Liste des actions + raccourci par défaut ('' = non assigné). Le mappage est
-   modifiable dans la fenêtre « Touches » et persisté dans userData/keys.json. */
 const ACTIONS = [
   { id: "toggle",           label: "Afficher / masquer la carte", def: "Control+Alt+O" },
   { id: "opacity_up",       label: "Plus opaque",                 def: "Control+Alt+Up" },
@@ -82,7 +67,6 @@ const ACTIONS = [
   { id: "realm_next",       label: "Carte suivante (Enfer → Purgatoire → Paradis)", def: "" },
   { id: "map_anim_toggle",  label: "Ouvrir / fermer la carte (animation)", def: "" },
 ];
-/* Mémorisation de la fenêtre (position, taille, opacité) entre les sessions. */
 let winState = {};
 function stateFile() { return path.join(app.getPath("userData"), "winstate.json"); }
 function loadState() { try { const s = JSON.parse(fs.readFileSync(stateFile(), "utf8")); if (s && typeof s === "object") winState = s; } catch (e) {} }
@@ -90,7 +74,7 @@ function saveState() { try { fs.writeFileSync(stateFile(), JSON.stringify(winSta
 function rememberBounds() {
   if (win && !win.isDestroyed() && !win.isMinimized()) { winState.bounds = win.getBounds(); saveState(); }
 }
-function boundsOnScreen(b) {   // évite une fenêtre restaurée hors écran
+function boundsOnScreen(b) {
   if (!b) return false;
   return screen.getAllDisplays().some((d) => {
     const w = d.workArea;
@@ -108,7 +92,7 @@ function loadKeys() {
 function saveKeys() { try { fs.writeFileSync(keysFile(), JSON.stringify(keymap)); } catch (e) {} }
 
 function createWindow() {
-  const b = boundsOnScreen(winState.bounds) ? winState.bounds : null;   // restaure la position si valide
+  const b = boundsOnScreen(winState.bounds) ? winState.bounds : null;
   if (typeof winState.opacity === "number") opacity = Math.min(1, Math.max(0.3, winState.opacity));
   win = new BrowserWindow({
     x: b ? b.x : undefined, y: b ? b.y : undefined,
@@ -122,19 +106,16 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-  win.setAlwaysOnTop(true, "screen-saver");        // au-dessus même des jeux plein écran (fenêtré/borderless)
+  win.setAlwaysOnTop(true, "screen-saver");
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  win.setOpacity(opacity);                         // restaure l'opacité mémorisée
+  win.setOpacity(opacity);
   win.removeMenu();
   win.loadURL(urlMap());
   openLinksExternally(win);
-  win.on("moved", rememberBounds);                 // mémorise la position au déplacement
+  win.on("moved", rememberBounds);
   win.on("closed", () => { win = null; });
 }
 
-/* Fenêtre Réglages SÉPARÉE (cadre Windows normal, opaque). Les changements
-   sont persistés en localStorage → la carte se synchronise via l'événement
-   "storage" (même origine, même session Electron). */
 function openSettings() {
   if (settingsWin && !settingsWin.isDestroyed()) { settingsWin.show(); settingsWin.focus(); return; }
   settingsWin = new BrowserWindow({
@@ -150,7 +131,6 @@ function openSettings() {
   settingsWin.on("closed", () => { settingsWin = null; });
 }
 
-/* 3ᵉ fenêtre : éditeur de touches. */
 function openKeys() {
   if (keysWin && !keysWin.isDestroyed()) { keysWin.show(); keysWin.focus(); return; }
   keysWin = new BrowserWindow({
@@ -169,7 +149,6 @@ function broadcastKeys() {
   [win, settingsWin, keysWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("keys:changed", { actions: ACTIONS, map: keymap }); });
 }
 
-/* --- HUD plein écran : marqueurs alignés sur la carte du jeu (bêta) --- */
 function openHud() {
   if (hudWin && !hudWin.isDestroyed()) return;
   const b = screen.getPrimaryDisplay().bounds;
@@ -180,7 +159,7 @@ function openHud() {
     backgroundColor: "#00000000",
     webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.js") },
   });
-  hudWin.setIgnoreMouseEvents(true, { forward: true });   // jamais bloquant pour le jeu
+  hudWin.setIgnoreMouseEvents(true, { forward: true });
   hudWin.setAlwaysOnTop(true, "screen-saver");
   hudWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   hudWin.removeMenu();
@@ -197,13 +176,10 @@ function reconcileHud() {
   if (betaWanted && gameRunning) openHud(); else closeHud();
 }
 
-/* --- Détection du jeu (process 33Immortals.exe) --- */
 function broadcastGame() {
   [win, settingsWin, keysWin].forEach((w) => { if (w && !w.isDestroyed()) w.webContents.send("overlay:game", { running: gameRunning }); });
 }
 function checkGame() {
-  // Liste tous les process et cherche un .exe contenant « immortal » MAIS pas « overlay »
-  // (pour ne pas se détecter soi-même : « 33 Immortals Overlay.exe »).
   exec("tasklist /NH /FO CSV", { windowsHide: true, maxBuffer: 8 * 1024 * 1024 }, (err, stdout) => {
     let running = false;
     if (!err && stdout) {
@@ -213,9 +189,6 @@ function checkGame() {
   });
 }
 
-/* Redimensionnement custom : une fenêtre transparente ne peut pas être
-   redimensionnée par les bords sous Windows → on suit le curseur depuis la
-   poignée (coin bas-droit) tant que le bouton est enfoncé. */
 function resizeTick() {
   if (!resizing || !win || win.isDestroyed()) return;
   const p = screen.getCursorScreenPoint();
@@ -233,23 +206,20 @@ function broadcastState() {
 function setOpacity(v) {
   opacity = Math.min(1, Math.max(0.3, v));
   if (win) win.setOpacity(opacity);
-  winState.opacity = opacity; saveState();         // mémorise l'opacité
+  winState.opacity = opacity; saveState();
   broadcastState();
 }
 function toggleClickThrough() {
   clickThrough = !clickThrough;
   if (win) {
     win.setIgnoreMouseEvents(clickThrough, { forward: true });
-    // En clic-traversant : fenêtre non-activante → les clics (marqueurs) sont reçus
-    // mais le focus reste au jeu (pas besoin de recliquer dans le jeu).
     win.setFocusable(!clickThrough);
-    if (clickThrough) win.blur();   // rend le focus immédiatement au jeu
+    if (clickThrough) win.blur();
   }
   refreshTray(); broadcastState();
 }
 function toggleShow() { if (win) (win.isVisible() ? win.hide() : win.show()); }
 
-/* --- contrôles depuis la barre de titre (preload) --- */
 ipcMain.on("overlay:min", () => { if (win) win.minimize(); });
 ipcMain.on("overlay:close", () => app.quit());
 ipcMain.on("overlay:opacity", (_e, v) => setOpacity(Number(v) || 1));
@@ -262,7 +232,7 @@ ipcMain.handle("keys:get", () => ({ actions: ACTIONS, map: keymap }));
 ipcMain.handle("keys:set", (_e, id, accel) => {
   if (id in keymap) {
     accel = (accel || "").trim();
-    if (accel) Object.keys(keymap).forEach((k) => { if (k !== id && keymap[k] === accel) keymap[k] = ""; }); // pas de doublon
+    if (accel) Object.keys(keymap).forEach((k) => { if (k !== id && keymap[k] === accel) keymap[k] = ""; });
     keymap[id] = accel;
     saveKeys(); applyShortcuts(); broadcastKeys();
   }
@@ -334,7 +304,7 @@ function dispatch(id) {
     case "realm_next": return sendRealmNext();
     case "map_anim_toggle": return sendMapToggle();
   }
-  if (id.indexOf("cat_") === 0) sendCat(id.slice(4));   // catégorie de marqueur
+  if (id.indexOf("cat_") === 0) sendCat(id.slice(4));
 }
 function applyShortcuts() {
   globalShortcut.unregisterAll();
@@ -374,12 +344,7 @@ function createTray() {
   } catch (e) {}
 }
 
-/* --- Mise à jour automatique (electron-updater + flux /app/latest.yml) ---
-   À chaque lancement : vérifie, télécharge en arrière-plan, installe à la
-   fermeture de l'app. Donc : on relance → MAJ installée. */
 function setupUpdates() {
-  // Auto-update ACTIF : télécharge en arrière-plan, installe à la fermeture
-  // → l'app est à jour au relancement suivant. (Provider github, flux latest.yml.)
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.logger = { info: ulog, warn: ulog, error: ulog, debug: () => {} };
@@ -400,11 +365,10 @@ function setupUpdates() {
   });
 
   const check = () => autoUpdater.checkForUpdates().catch((e) => ulog("check failed " + (e && e.message)));
-  check();                                   // au lancement
-  setInterval(check, 30 * 60 * 1000);        // re-vérifie toutes les 30 min
+  check();
+  setInterval(check, 30 * 60 * 1000);
 }
 
-// Instance unique
 if (!app.requestSingleInstanceLock()) { app.quit(); }
 else {
   app.on("second-instance", () => { if (win) { win.show(); win.focus(); } });
@@ -417,8 +381,8 @@ else {
     applyShortcuts();
     setupUpdates();
     checkGame();
-    setInterval(checkGame, 5000);   // surveille le lancement / fermeture du jeu
+    setInterval(checkGame, 5000);
   });
   app.on("will-quit", () => { rememberBounds(); globalShortcut.unregisterAll(); });
-  app.on("window-all-closed", () => { /* reste en zone de notification */ });
+  app.on("window-all-closed", () => { });
 }

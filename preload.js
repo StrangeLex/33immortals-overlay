@@ -1,6 +1,3 @@
-/* Pont sécurisé entre la page (carte du site) et l'app Electron.
-   Marque la page comme « dans l'overlay » (affiche la barre de titre)
-   et expose les contrôles de la fenêtre. */
 const { contextBridge, ipcRenderer } = require("electron");
 
 function markOverlay() {
