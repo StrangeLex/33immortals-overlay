@@ -9,6 +9,9 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 - Distribution and updates via **GitHub Releases**.
 - On-site map: **finer-grained zoom levels** (intermediate steps on wheel, buttons and keyboard) — fixes #1.
 
+## [1.0.31]
+- Resize grip moved to the bottom-left; it now appears only when the overlay is focused and the mouse is over it, and resizes from that corner.
+
 ## [1.0.30]
 - Fixed: minimizing a window no longer drops you from a shared party (timers keep running in the background).
 

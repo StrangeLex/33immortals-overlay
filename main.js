@@ -195,9 +195,10 @@ function resizeTick() {
   const p = screen.getCursorScreenPoint();
   const b = win.getBounds();
   const min = win.getMinimumSize();
-  const width = Math.max(min[0], p.x - b.x);
+  const rightX = b.x + b.width;
+  const width = Math.max(min[0], rightX - p.x);
   const height = Math.max(min[1], p.y - b.y);
-  win.setBounds({ x: b.x, y: b.y, width: width, height: height });
+  win.setBounds({ x: rightX - width, y: b.y, width: width, height: height });
   setTimeout(resizeTick, 16);
 }
 
