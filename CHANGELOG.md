@@ -9,6 +9,9 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 - Distribution and updates via **GitHub Releases**.
 - On-site map: **finer-grained zoom levels** (intermediate steps on wheel, buttons and keyboard) — fixes #1.
 
+## [1.0.32]
+- Fixed: a minimized Settings/Keys window can now be restored from the taskbar / Alt+Tab (no longer blocked by always-on-top).
+
 ## [1.0.31]
 - Resize grip moved to the bottom-left; it now appears only when the overlay is focused and the mouse is over it, and resizes from that corner.
 

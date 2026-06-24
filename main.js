@@ -117,8 +117,18 @@ function createWindow() {
   win.on("closed", () => { win = null; });
 }
 
+function restoreTopFix(w) {
+  w.on("minimize", () => { if (!w.isDestroyed()) w.setAlwaysOnTop(false); });
+  w.on("restore", () => { if (!w.isDestroyed()) { w.setAlwaysOnTop(true); w.show(); w.focus(); } });
+}
+function showWin(w) {
+  if (!w || w.isDestroyed()) return;
+  if (w.isMinimized()) w.restore();
+  w.setAlwaysOnTop(true); w.show(); w.focus();
+}
+
 function openSettings() {
-  if (settingsWin && !settingsWin.isDestroyed()) { settingsWin.show(); settingsWin.focus(); return; }
+  if (settingsWin && !settingsWin.isDestroyed()) { showWin(settingsWin); return; }
   settingsWin = new BrowserWindow({
     width: 360, height: 640, minWidth: 300, minHeight: 360,
     title: "Réglages — 33 Immortals", backgroundColor: "#0b0710",
@@ -129,11 +139,12 @@ function openSettings() {
   settingsWin.removeMenu();
   settingsWin.loadURL(urlSettings());
   openLinksExternally(settingsWin);
+  restoreTopFix(settingsWin);
   settingsWin.on("closed", () => { settingsWin = null; });
 }
 
 function openKeys() {
-  if (keysWin && !keysWin.isDestroyed()) { keysWin.show(); keysWin.focus(); return; }
+  if (keysWin && !keysWin.isDestroyed()) { showWin(keysWin); return; }
   keysWin = new BrowserWindow({
     width: 440, height: 640, minWidth: 360, minHeight: 380,
     title: "Touches — 33 Immortals", backgroundColor: "#0b0710",
@@ -144,6 +155,7 @@ function openKeys() {
   keysWin.removeMenu();
   keysWin.loadURL(urlKeys());
   openLinksExternally(keysWin);
+  restoreTopFix(keysWin);
   keysWin.on("closed", () => { keysWin = null; });
 }
 function broadcastKeys() {
