@@ -103,6 +103,7 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      backgroundThrottling: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -123,7 +124,7 @@ function openSettings() {
     title: "Réglages — 33 Immortals", backgroundColor: "#0b0710",
     alwaysOnTop: true, skipTaskbar: false,
     icon: path.join(__dirname, "build", "icon.ico"),
-    webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.js") },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, backgroundThrottling: false, preload: path.join(__dirname, "preload.js") },
   });
   settingsWin.removeMenu();
   settingsWin.loadURL(urlSettings());
@@ -138,7 +139,7 @@ function openKeys() {
     title: "Touches — 33 Immortals", backgroundColor: "#0b0710",
     alwaysOnTop: true, skipTaskbar: false,
     icon: path.join(__dirname, "build", "icon.ico"),
-    webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.js") },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, backgroundThrottling: false, preload: path.join(__dirname, "preload.js") },
   });
   keysWin.removeMenu();
   keysWin.loadURL(urlKeys());
@@ -157,7 +158,7 @@ function openHud() {
     frame: false, transparent: true, resizable: false, movable: false,
     focusable: false, skipTaskbar: true, hasShadow: false, fullscreenable: false,
     backgroundColor: "#00000000",
-    webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.js") },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, backgroundThrottling: false, preload: path.join(__dirname, "preload.js") },
   });
   hudWin.setIgnoreMouseEvents(true, { forward: true });
   hudWin.setAlwaysOnTop(true, "screen-saver");

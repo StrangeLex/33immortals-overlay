@@ -9,6 +9,9 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 - Distribution and updates via **GitHub Releases**.
 - On-site map: **finer-grained zoom levels** (intermediate steps on wheel, buttons and keyboard) — fixes #1.
 
+## [1.0.30]
+- Fixed: minimizing a window no longer drops you from a shared party (timers keep running in the background).
+
 ## [1.0.29]
 - Added **Russian** language to the app (auto-detected, switchable) — interface, map and keys.
 
