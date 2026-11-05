@@ -2,7 +2,7 @@
 
 <img src="https://33immortals.fr/favicon-512.png" alt="33 Immortals Overlay" width="110" />
 
-# 33 Immortals Overlay
+# 33 Immortals Overlay [ABANDONED]
 
 **🗺️ The _33 Immortals_ interactive map, as an overlay on top of the game.**
 **🗺️ La carte interactive de _33 Immortals_, en superposition par-dessus le jeu.**
